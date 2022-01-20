@@ -11,7 +11,11 @@ class RemoteAuthentication {
   RemoteAuthentication({@required this.httpClient, @required this.url});
   Future<void> auth(AuthenticationParams params) async {
     final body = RemoteAuthenticationParams.fromDomain(params).toJson();
-    await httpClient.request(url: url, method: 'post', body: body);
+    try {
+      await httpClient.request(url: url, method: 'post', body: body);
+    } on HttpError {
+      throw DomainError.unexpected;
+    }
   }
 }
 
@@ -34,6 +38,11 @@ class RemoteAuthenticationParams {
   factory RemoteAuthenticationParams.fromDomain(AuthenticationParams params) =>
       RemoteAuthenticationParams(email: params.email, password: params.secret);
 }
+
+//domain/helpers/domain_error.dart
+enum DomainError { unexpected }
+//data/http/http_error.dart
+enum HttpError { badRequest }
 
 void main() {
   HttpClientSpy httpClient;
@@ -78,5 +87,17 @@ void main() {
       'email': params.email,
       'password': params.secret,
     }));
+  });
+  test('should throw UnexpectedError if HttpClient return 400', () async {
+    //arrange
+    when(httpClient.request(
+            url: anyNamed("url"),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.badRequest);
+    //act
+    final future = sut.auth(params);
+    //assert
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
