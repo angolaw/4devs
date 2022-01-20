@@ -10,10 +10,7 @@ class RemoteAuthentication {
 
   RemoteAuthentication({@required this.httpClient, @required this.url});
   Future<void> auth(AuthenticationParams params) async {
-    final body = {
-      'email': params.email,
-      'password': params.secret,
-    };
+    final body = RemoteAuthenticationParams.fromDomain(params).toJson();
     await httpClient.request(url: url, method: 'post', body: body);
   }
 }
@@ -24,6 +21,19 @@ class HttpClient {
 }
 
 class HttpClientSpy extends Mock implements HttpClient {}
+
+class RemoteAuthenticationParams {
+  final String email;
+  final String password;
+
+  RemoteAuthenticationParams({@required this.email, @required this.password});
+  Map toJson() => {
+        'email': email,
+        'password': password,
+      };
+  factory RemoteAuthenticationParams.fromDomain(AuthenticationParams params) =>
+      RemoteAuthenticationParams(email: params.email, password: params.secret);
+}
 
 void main() {
   HttpClientSpy httpClient;
@@ -43,14 +53,20 @@ void main() {
     //act
     await sut.auth(params);
     //assert
-    verify(httpClient.request(url: url, method: 'post', body: params.toJson()));
+    verify(httpClient.request(url: url, method: 'post', body: {
+      'email': params.email,
+      'password': params.secret,
+    }));
   });
   test('should call httpClient with correct values', () async {
     //arrange
     //act
     await sut.auth(params);
     //assert
-    verify(httpClient.request(url: url, method: 'post', body: params.toJson()));
+    verify(httpClient.request(url: url, method: 'post', body: {
+      'email': params.email,
+      'password': params.secret,
+    }));
   });
   test('should call httpClient with correct body', () async {
     //arrange
@@ -58,6 +74,9 @@ void main() {
     //act
     await sut.auth(params);
     //assert
-    verify(httpClient.request(url: url, method: 'post', body: params.toJson()));
+    verify(httpClient.request(url: url, method: 'post', body: {
+      'email': params.email,
+      'password': params.secret,
+    }));
   });
 }
