@@ -13,8 +13,10 @@ class RemoteAuthentication {
     final body = RemoteAuthenticationParams.fromDomain(params).toJson();
     try {
       await httpClient.request(url: url, method: 'post', body: body);
-    } on HttpError {
-      throw DomainError.unexpected;
+    } on HttpError catch (e) {
+      throw e == HttpError.unauthorized
+          ? DomainError.invalidCredentials
+          : DomainError.unexpected;
     }
   }
 }
@@ -40,9 +42,9 @@ class RemoteAuthenticationParams {
 }
 
 //domain/helpers/domain_error.dart
-enum DomainError { unexpected }
+enum DomainError { unexpected, invalidCredentials }
 //data/http/http_error.dart
-enum HttpError { badRequest, notFound, serverError }
+enum HttpError { badRequest, notFound, serverError, unauthorized }
 
 void main() {
   HttpClientSpy httpClient;
@@ -125,5 +127,18 @@ void main() {
 
     //assert
     expect(future, throwsA(DomainError.unexpected));
+  });
+  test('should return InvalidCredentials if HttpClient returns 401', () async {
+    //arrange
+    when(httpClient.request(
+            url: anyNamed("url"),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.unauthorized);
+    //act
+    final future = sut.auth(params);
+
+    //assert
+    expect(future, throwsA(DomainError.invalidCredentials));
   });
 }
