@@ -43,10 +43,7 @@ void main() {
     //act
     await sut.auth(params);
     //assert
-    verify(httpClient.request(
-        url: url,
-        method: 'post',
-        body: {"email": params.email, "password": params.secret}));
+    verify(httpClient.request(url: url, method: 'post', body: params.toJson()));
   });
   test('should call httpClient with correct values', () async {
     //arrange
