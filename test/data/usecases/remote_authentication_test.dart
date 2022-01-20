@@ -42,7 +42,7 @@ class RemoteAuthenticationParams {
 //domain/helpers/domain_error.dart
 enum DomainError { unexpected }
 //data/http/http_error.dart
-enum HttpError { badRequest }
+enum HttpError { badRequest, notFound }
 
 void main() {
   HttpClientSpy httpClient;
@@ -97,6 +97,19 @@ void main() {
         .thenThrow(HttpError.badRequest);
     //act
     final future = sut.auth(params);
+    //assert
+    expect(future, throwsA(DomainError.unexpected));
+  });
+  test('should return UnexpectedError if HttpClient returns 404', () async {
+    //arrange
+    when(httpClient.request(
+            url: anyNamed("url"),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.notFound);
+    //act
+    final future = sut.auth(params);
+
     //assert
     expect(future, throwsA(DomainError.unexpected));
   });
