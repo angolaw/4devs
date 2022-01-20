@@ -1,4 +1,4 @@
-import '../entities/account_entity.dart';
+import '../entities/entities.dart';
 import 'package:meta/meta.dart';
 
 abstract class Authentication {
