@@ -56,28 +56,27 @@ void main() {
       url: anyNamed("url"),
       method: anyNamed('method'),
       body: anyNamed('body')));
+  Map mockValidData() =>
+      {'accessToken': faker.guid.guid(), 'name': faker.person.name()};
+  void mockHttpData(Map data) {
+    mockRequest().thenAnswer((_) async => data);
+  }
+
+  void mockHttpError(HttpError error) {
+    mockRequest().thenThrow(error);
+  }
+
   setUp(() {
     httpClient = HttpClientSpy();
     url = faker.internet.httpUrl();
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
     params = AuthenticationParams(
         email: faker.internet.email(), secret: faker.internet.password());
+    mockHttpData(mockValidData());
   });
-  test('should call httpClient with correct url', () async {
-    //arrange
 
-    //act
-    await sut.auth(params);
-    //assert
-    verify(httpClient.request(url: url, method: 'post', body: {
-      'email': params.email,
-      'password': params.secret,
-    }));
-  });
   test('should call httpClient with correct values', () async {
     //arrange
-    mockRequest().thenAnswer(
-        (_) => {"accessToken": faker.guid.guid(), "name": faker.person.name()});
     //act
     await sut.auth(params);
     //assert
@@ -150,13 +149,11 @@ void main() {
   });
   test('should return an Account if httpClient returns 200', () async {
     //arrange
-    final accessToken = faker.guid.guid();
-
-    mockRequest().thenAnswer((_) async =>
-        {'accessToken': accessToken, 'name': faker.person.firstName()});
+    final validData = mockValidData();
+    mockHttpData(validData);
     //act
     final account = await sut.auth(params);
     //assert
-    expect(account.token, accessToken);
+    expect(account.token, validData['accessToken']);
   });
 }
