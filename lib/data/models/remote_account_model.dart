@@ -1,8 +1,11 @@
+import 'package:fordevs/domain/entities/entities.dart';
+
 class RemoteAccountModel {
-  final String token;
+  final String accessToken;
   RemoteAccountModel(
-    this.token,
+    this.accessToken,
   );
   factory RemoteAccountModel.fromJson(Map json) =>
       RemoteAccountModel(json['accessToken']);
+  AccountEntity toEntity() => AccountEntity(accessToken);
 }

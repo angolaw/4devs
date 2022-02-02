@@ -1,4 +1,5 @@
 import 'package:faker/faker.dart';
+import 'package:fordevs/data/models/remote_account_model.dart';
 import 'package:fordevs/domain/entities/account_entity.dart';
 import 'package:fordevs/domain/usecases/usecases.dart';
 import 'package:mockito/mockito.dart';
@@ -10,12 +11,12 @@ class RemoteAuthentication {
   final String url;
 
   RemoteAuthentication({@required this.httpClient, @required this.url});
-  Future<AccountEntity> auth(AuthenticationParams params) async {
+  Future<RemoteAccountModel> auth(AuthenticationParams params) async {
     final body = RemoteAuthenticationParams.fromDomain(params).toJson();
     try {
       final httpResponse =
           await httpClient.request(url: url, method: 'post', body: body);
-      return AccountEntity.fromJson(httpResponse);
+      return RemoteAccountModel.fromJson(httpResponse);
     } on HttpError catch (e) {
       throw e == HttpError.unauthorized
           ? DomainError.invalidCredentials
