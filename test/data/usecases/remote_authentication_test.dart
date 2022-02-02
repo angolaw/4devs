@@ -1,6 +1,8 @@
 import 'package:faker/faker.dart';
+import 'package:fordevs/data/http/http_error.dart';
 import 'package:fordevs/data/models/remote_account_model.dart';
 import 'package:fordevs/domain/entities/account_entity.dart';
+import 'package:fordevs/domain/helpers/domain_error.dart';
 import 'package:fordevs/domain/usecases/usecases.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -44,11 +46,6 @@ class RemoteAuthenticationParams {
   factory RemoteAuthenticationParams.fromDomain(AuthenticationParams params) =>
       RemoteAuthenticationParams(email: params.email, password: params.secret);
 }
-
-//domain/helpers/domain_error.dart
-enum DomainError { unexpected, invalidCredentials }
-//data/http/http_error.dart
-enum HttpError { badRequest, notFound, serverError, unauthorized }
 
 void main() {
   HttpClientSpy httpClient;
