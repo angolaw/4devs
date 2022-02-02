@@ -98,11 +98,7 @@ void main() {
   });
   test('should throw UnexpectedError if HttpClient return 400', () async {
     //arrange
-    when(httpClient.request(
-            url: anyNamed("url"),
-            method: anyNamed('method'),
-            body: anyNamed('body')))
-        .thenThrow(HttpError.badRequest);
+    mockHttpError(HttpError.badRequest);
     //act
     final future = sut.auth(params);
     //assert
@@ -110,11 +106,7 @@ void main() {
   });
   test('should return UnexpectedError if HttpClient returns 404', () async {
     //arrange
-    when(httpClient.request(
-            url: anyNamed("url"),
-            method: anyNamed('method'),
-            body: anyNamed('body')))
-        .thenThrow(HttpError.notFound);
+    mockHttpError(HttpError.notFound);
     //act
     final future = sut.auth(params);
 
@@ -123,11 +115,7 @@ void main() {
   });
   test('should return UnexpectedError if HttpClient returns 500', () async {
     //arrange
-    when(httpClient.request(
-            url: anyNamed("url"),
-            method: anyNamed('method'),
-            body: anyNamed('body')))
-        .thenThrow(HttpError.serverError);
+    mockHttpError(HttpError.serverError);
     //act
     final future = sut.auth(params);
 
@@ -136,11 +124,7 @@ void main() {
   });
   test('should return InvalidCredentials if HttpClient returns 401', () async {
     //arrange
-    when(httpClient.request(
-            url: anyNamed("url"),
-            method: anyNamed('method'),
-            body: anyNamed('body')))
-        .thenThrow(HttpError.unauthorized);
+    mockHttpError(HttpError.unauthorized);
     //act
     final future = sut.auth(params);
 
