@@ -1,8 +1,8 @@
 class RemoteAccountModel {
   final String token;
   RemoteAccountModel(
-     this.token,
+    this.token,
   );
-  factory RemoteAccountModel.fromJson((Map json) => RemoteAccountModel(json['accessToken']));
-  
+  factory RemoteAccountModel.fromJson(Map json) =>
+      RemoteAccountModel(json['accessToken']);
 }
